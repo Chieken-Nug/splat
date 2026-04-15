@@ -1466,3 +1466,12 @@ main().catch((err) => {
     document.getElementById("spinner").style.display = "none";
     document.getElementById("message").innerText = err.toString();
 });
+
+window.addEventListener('mousedown', () => {
+    window.focus();
+});
+
+// This helps when the mouse enters the iframe
+window.addEventListener('mouseenter', () => {
+    window.focus();
+});
