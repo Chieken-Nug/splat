@@ -1193,9 +1193,9 @@ async function main() {
         if (activeKeys.includes("ArrowUp")) inv = rotate4(inv, 0.01, 1, 0, 0);     // Look up
         if (activeKeys.includes("ArrowDown")) inv = rotate4(inv, -0.01, 1, 0, 0);  // Look down
         
-        // Q/E - Roll camera (optional)
-        if (activeKeys.includes("KeyQ")) inv = rotate4(inv, 0.01, 0, 0, 1);
-        if (activeKeys.includes("KeyE")) inv = rotate4(inv, -0.01, 0, 0, 1);
+        // Q/E - Roll camera (optional) modified from original inverted roll. 
+        if (activeKeys.includes("KeyE")) inv = rotate4(inv, 0.01, 0, 0, 1);
+        if (activeKeys.includes("KeyQ")) inv = rotate4(inv, -0.01, 0, 0, 1);
 
         const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
         let isJumping = activeKeys.includes("Space");
