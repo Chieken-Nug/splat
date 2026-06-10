@@ -1,5 +1,3 @@
-
-
 let cameras = [
     {
         id: 0,
@@ -729,7 +727,6 @@ let defaultViewMatrix = [
     0.03, 6.55, 1,
 ];
 let viewMatrix = defaultViewMatrix;
-
 async function main() {
     let carousel = true;
     const params = new URLSearchParams(location.search);
@@ -737,14 +734,12 @@ async function main() {
         viewMatrix = JSON.parse(decodeURIComponent(location.hash.slice(1)));
         carousel = false;
     } catch (err) {}
-    
     const url = new URL(
         // "nike.splat",
         // location.href,
         params.get("url") || "train.splat",
         "https://huggingface.co/cakewalk/splat-data/resolve/main/",
     );
-    
     const req = await fetch(url, {
         mode: "cors", // no-cors, *cors, same-origin
         credentials: "omit", // include, *same-origin, omit
@@ -755,26 +750,7 @@ async function main() {
 
     const rowLength = 3 * 4 + 3 * 4 + 4 + 4;
     const reader = req.body.getReader();
-    
-    // HIDE ERROR: Allocate a massive flat placeholder array size (e.g. 150MB)
-    // This gives the compressed gzip stream chunks plenty of room to expand
-    // so it never overflows or throws an out-of-bounds error banner.
-    let splatData = new Uint8Array(150 * 1024 * 1024);
-
-    // FIX: Removed 'let' from bytesRead here to fix the "already been declared" SyntaxError
-    bytesRead = 0; 
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        // Put the incoming data chunk directly into our oversized array
-        splatData.set(value, bytesRead);
-        bytesRead += value.length;
-    }
-
-    // Shrink the array down to exactly how many bytes were actually read 
-    // so WebGL doesn't try to render empty space
-    splatData = splatData.subarray(0, bytesRead);
+    let splatData = new Uint8Array(req.headers.get("content-length"));
 
     const downsample =
         splatData.length / rowLength > 500000 ? 1 : 1 / devicePixelRatio;
