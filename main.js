@@ -1,12 +1,4 @@
-<script>
-  window.addEventListener('error', function(e) {
-    // If the error message contains the out of bounds phrase, hide it
-    if (e.message && e.message.includes('offset is out of bounds')) {
-      e.preventDefault(); // Prevents the error from showing up in red
-      console.warn('Splat stream optimized via Gzip.'); // Replaces it with a clean note
-    }
-  });
-</script>
+
 
 let cameras = [
     {
