@@ -1,5 +1,3 @@
-
-
 let cameras = [
     {
         id: 0,
@@ -752,28 +750,7 @@ async function main() {
 
     const rowLength = 3 * 4 + 3 * 4 + 4 + 4;
     const reader = req.body.getReader();
-    
-    // Fallback if content-length is missing or altered by Gzip compression
-    let contentLength = parseInt(req.headers.get("content-length"));
-    let splatData = new Uint8Array(contentLength || 0);
-
-    // Stream the data chunks smoothly into a dynamic array builder
-    let bytesRead = 0;
-    let chunks = [];
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        chunks.push(value);
-        bytesRead += value.length;
-    }
-
-    // Combine all chunks into the final array accurately matching unpacked size
-    splatData = new Uint8Array(bytesRead);
-    let offset = 0;
-    for (let chunk of chunks) {
-        splatData.set(chunk, offset);
-        offset += chunk.length;
-    }
+    let splatData = new Uint8Array(req.headers.get("content-length"));
 
     const downsample =
         splatData.length / rowLength > 500000 ? 1 : 1 / devicePixelRatio;
