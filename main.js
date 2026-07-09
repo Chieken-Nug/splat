@@ -1083,20 +1083,31 @@ async function main() {
                 let inv = invert4(viewMatrix);
                 let dx = (4 * (e.touches[0].clientX - startX)) / innerWidth;
                 let dy = (4 * (e.touches[0].clientY - startY)) / innerHeight;
-
                 let d = 4;
                 inv = translate4(inv, 0, 0, d);
-                // inv = translate4(inv,  -x, -y, -z);
-                // inv = translate4(inv,  x, y, z);
+                // inv = translate4(inv, -x, -y, -z);
+                // inv = translate4(inv, x, y, z);
                 inv = rotate4(inv, dx, 0, 1, 0);
                 inv = rotate4(inv, -dy, 1, 0, 0);
                 inv = translate4(inv, 0, 0, -d);
 
                 viewMatrix = invert4(inv);
 
+                // === ADD THIS ROLL LOCK (prevents camera rolling) ===
+                inv = invert4(viewMatrix);
+                inv[2] = 0;   // forward X
+                inv[6] = 0;   // forward Y
+                inv[10] = 1;  // forward Z
+                inv[1] = 0;   // up X
+                inv[5] = 1;   // up Y
+                inv[9] = 0;   // up Z
+                viewMatrix = invert4(inv);
+                // ===================================================
+
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
-            } else if (e.touches.length === 2) {
+            } 
+            else if (e.touches.length === 2) {
                 // alert('beep')
                 const dtheta =
                     Math.atan2(startY - altY, startX - altX) -
