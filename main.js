@@ -1080,47 +1080,23 @@ async function main() {
         (e) => {
             e.preventDefault();
             if (e.touches.length === 1 && down) {
+                let inv = invert4(viewMatrix);
                 let dx = (4 * (e.touches[0].clientX - startX)) / innerWidth;
                 let dy = (4 * (e.touches[0].clientY - startY)) / innerHeight;
 
-                let inv = invert4(viewMatrix);
-                
-                // Simpler orbit with better roll control
                 let d = 4;
                 inv = translate4(inv, 0, 0, d);
-                
-                inv = rotate4(inv, dx, 0, 1, 0);      // Yaw
-                inv = rotate4(inv, -dy, 1, 0, 0);     // Pitch
-                
+                // inv = translate4(inv,  -x, -y, -z);
+                // inv = translate4(inv,  x, y, z);
+                inv = rotate4(inv, dx, 0, 1, 0);
+                inv = rotate4(inv, -dy, 1, 0, 0);
                 inv = translate4(inv, 0, 0, -d);
-
-                viewMatrix = invert4(inv);
-
-                // Strong roll correction
-                inv = invert4(viewMatrix);
-                const forward = [inv[2], inv[6], inv[10]];
-                const right = [
-                    forward[1], 
-                    -forward[0], 
-                    0
-                ].map((v, i, a) => v / Math.hypot(a[0], a[1]));
-                
-                const up = [
-                    right[1] * forward[2] - right[2] * forward[1],
-                    right[2] * forward[0] - right[0] * forward[2],
-                    right[0] * forward[1] - right[1] * forward[0]
-                ];
-
-                inv[0] = right[0];   inv[4] = right[1];   inv[8]  = right[2];
-                inv[1] = up[0];      inv[5] = up[1];      inv[9]  = up[2];
-                inv[2] = forward[0]; inv[6] = forward[1]; inv[10] = forward[2];
 
                 viewMatrix = invert4(inv);
 
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
-            }
-            else if (e.touches.length === 2) {
+            } else if (e.touches.length === 2) {
                 // alert('beep')
                 const dtheta =
                     Math.atan2(startY - altY, startX - altX) -
