@@ -1093,15 +1093,38 @@ async function main() {
 
                 viewMatrix = invert4(inv);
 
-                // === ADD THIS ROLL LOCK (prevents camera rolling) ===
-                inv = invert4(viewMatrix);
-                inv[2] = 0;   // forward X
-                inv[6] = 0;   // forward Y
-                inv[10] = 1;  // forward Z
-                inv[1] = 0;   // up X
-                inv[5] = 1;   // up Y
-                inv[9] = 0;   // up Z
+                
+                // Force the camera to stay level
+                let forward = [inv[2], inv[6], inv[10]];
+                let up = [0, 1, 0];                    // world up
+                
+                // Rebuild right vector
+                let right = [
+                    forward[1] * up[2] - forward[2] * up[1],
+                    forward[2] * up[0] - forward[0] * up[2],
+                    forward[0] * up[1] - forward[1] * up[0]
+                ];
+                
+                // Normalize
+                let len = Math.hypot(right[0], right[1], right[2]);
+                right[0] /= len;
+                right[1] /= len;
+                right[2] /= len;
+                
+                // Rebuild up vector properly
+                up = [
+                    right[2] * forward[1] - right[1] * forward[2],
+                    right[0] * forward[2] - right[2] * forward[0],
+                    right[1] * forward[0] - right[0] * forward[1]
+                ];
+                
+                // Write back to matrix
+                inv[0] = right[0];   inv[4] = right[1];   inv[8]  = right[2];
+                inv[1] = up[0];      inv[5] = up[1];      inv[9]  = up[2];
+                inv[2] = forward[0]; inv[6] = forward[1]; inv[10] = forward[2];
+                
                 viewMatrix = invert4(inv);
+                // =============================
                 // ===================================================
 
                 startX = e.touches[0].clientX;
